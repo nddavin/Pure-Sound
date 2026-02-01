@@ -1,0 +1,118 @@
+# macOS metadata files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Apple Double files (._* prefix)
+._*
+.#*
+
+# macOS Finder metadata
+.DS_Store?
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# macOS extended attributes (com.apple.*)
+ com.apple.*
+ com.apple.ResourceFork
+
+# macOS quarantine files
+.quarantine/
+
+# macOS backup files
+*~.nib/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.perspectivev3
+!default.perspectivev3
+xcuserstate/
+xcuserdata/
+
+# macOS CocoaPods
+Pods/
+
+# macOS Alamofire
+xcshareddata/
+
+# macOS Swift Package Manager
+.build/
+.swiftpm/
+
+# macOS Core Data
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+
+# IDE metadata
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Log files
+*.log
+logs/
+*.audit
+
+# Test output
+tests/output/
+
+# Audio processing outputs
+*.wav
+*.mp3
+*.flac
+*.aac
+*.ogg
+*.m4a
+
+# Config files with sensitive data (include but ignore specific files)
+docker/.env
+*.pem
+*.key
+*.crt
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Docker
+docker-compose.override.yml
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
