@@ -1,14 +1,17 @@
-# Pure Sound Development Environment
-# For development with hot-reload and debugging capabilities
+# Pure Sound - Development Docker Environment
+# Multi-stage build for development with full tooling
 
-FROM python:3.13-slim-bullseye
+# Stage 1: Base - Python environment
+FROM python:3.13-slim-bullseye as base
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV DEBIAN_FRONTEND=noninteractive
+ENV PIP_NO_CACHE_DIR=0
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 
-# Install system dependencies including development tools
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     libsndfile1-dev \
@@ -19,60 +22,60 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     build-essential \
     git \
-    vim \
     curl \
-    wget \
+    vim \
+    nano \
     htop \
-    tree \
-    less \
-    man-db \
     && rm -rf /var/lib/apt/lists/*
 
-# Install development tools
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir \
-    numpy \
-    scipy \
-    boto3 \
-    PyQt6 \
-    pytest \
-    pytest-cov \
-    black \
-    flake8 \
-    mypy \
-    ipython \
-    jupyter \
-    notebook \
-    debugpy
+# Stage 2: Builder - Install dependencies
+FROM base as builder
 
-# Create app user
-RUN groupadd -r appuser && useradd -r -g appuser appuser
-
-# Set working directory
 WORKDIR /app
 
-# Copy requirements first for better caching
+# Copy requirements files
 COPY requirements.txt .
+COPY requirements-dev.txt .
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt && \
+    pip install -r requirements-dev.txt
+
+# Stage 3: Development - Full development environment
+FROM base as development
+
+# Install development tools
+RUN apt-get update && apt-get install -y \
+    docker.io \
+    docker-compose \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy Python dependencies from builder
+COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy application code
 COPY . .
 
-# Install development dependencies
-COPY requirements-dev.txt .
-RUN pip install --no-cache-dir -r requirements-dev.txt
+# Create non-root user with sudo access
+RUN groupadd -r devuser && useradd -r -g devuser devuser && \
+    echo "devuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    mkdir -p /home/devuser && chown -R devuser:devuser /home/devuser
 
-# Create directories
-RUN mkdir -p /app/outputs /app/models /app/config && \
-    chown -R appuser:appuser /app
+# Install pre-commit hooks
+USER devuser
+WORKDIR /home/devuser
 
-# Switch to app user
-USER appuser
+# Copy project files to home directory
+RUN cp -r /app /home/devuser/project && \
+    cd /home/devuser/project && \
+    pip install -r requirements-dev.txt && \
+    pre-commit install
 
-# Expose ports for debugging and potential web interface
-EXPOSE 5678 8080
+WORKDIR /home/devuser/project
 
-# Default development command
-CMD ["python", "-m", "debugpy", "--listen", "0.0.0.0:5678", "--wait-for-client", "compress_audio.py", "--gui"]
+# Set default command
+CMD ["/bin/bash"]

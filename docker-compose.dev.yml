@@ -1,0 +1,83 @@
+# Pure Sound - Development Docker Compose Configuration
+version: '3.8'
+
+services:
+  # Development API Server with hot reload
+  pure-sound-dev:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+      target: development
+    container_name: pure-sound-dev
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+      - "5678:5678"  # Debug port
+    environment:
+      - PURE_SOUND_ENV=development
+      - PURE_SOUND_DEBUG=true
+      - PURE_SOUND_LOG_LEVEL=DEBUG
+      - PURE_SOUND_WORKERS=2
+      - DEBUG=true
+      - DEV_MODE=true
+      - PURE_SOUND_HOST=0.0.0.0
+      - PURE_SOUND_PORT=8000
+    volumes:
+      - .:/home/devuser/project
+      - ./input:/app/input:ro
+      - ./output:/app/outputs
+      - ./models:/app/models
+      - ./config:/app/config
+    networks:
+      - pure-sound-dev-network
+    depends_on:
+      - redis
+    stdin_open: true
+    tty: true
+
+  # Redis for job queue
+  redis:
+    image: redis:7-alpine
+    container_name: pure-sound-redis-dev
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-dev-data:/data
+    networks:
+      - pure-sound-dev-network
+    ports:
+      - "6379:6379"
+
+  # PostgreSQL for development database
+  postgres:
+    image: postgres:15-alpine
+    container_name: pure-sound-postgres-dev
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=pure_sound
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres-dev-data:/var/lib/postgresql/data
+    networks:
+      - pure-sound-dev-network
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  pure-sound-dev-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
+
+volumes:
+  redis-dev-data:
+    driver: local
+  postgres-dev-data:
+    driver: local

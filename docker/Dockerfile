@@ -15,7 +15,6 @@ RUN apt-get update && apt-get install -y \
     libsndfile1-dev \
     libopus0 \
     libmp3lame0 \
-    libfdk-aac2 \
     libsamplerate0-dev \
     pkg-config \
     build-essential \
@@ -33,8 +32,7 @@ COPY requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir numpy scipy boto3 PyQt6
+    pip install --no-cache-dir numpy scipy boto3
 
 # Copy application code
 COPY . .
@@ -50,7 +48,6 @@ RUN apt-get update && apt-get install -y \
     ffmpeg \
     libopus0 \
     libmp3lame0 \
-    libfdk-aac2 \
     libsamplerate0 \
     && rm -rf /var/lib/apt/lists/* && \
     apt-get clean
