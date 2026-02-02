@@ -1,0 +1,41 @@
+# E2E Test Dependencies for Pure Sound Application
+# 
+# This file contains dependencies required for running end-to-end tests
+# using Playwright and pytest.
+
+# Core testing
+pytest>=7.0.0
+pytest-cov>=4.0.0
+pytest-asyncio>=0.21.0
+pytest-xdist>=3.0.0  # Parallel test execution
+
+# Playwright
+playwright>=1.40.0
+pytest-playwright>=0.4.0
+
+# HTTP testing
+httpx>=0.25.0  # Async HTTP client for API testing
+requests>=2.31.0
+
+# Type hints
+typing-extensions>=4.8.0
+
+# Utilities
+python-dateutil>=2.8.0
+faker>=19.0.0  # Fake data generation
+
+# Installation commands:
+# pip install -r tests/e2e/requirements-e2e.txt
+
+# For browser installation:
+# playwright install
+
+# For headed mode (visible browser):
+# pip install playwright
+# playwright install-deps
+
+# Running E2E tests:
+# pytest tests/e2e/ -v
+# pytest tests/e2e/ --headed
+# pytest tests/e2e/ -x  # Stop on first failure
+# pytest tests/e2e/ -v --tb=short  # With traceback

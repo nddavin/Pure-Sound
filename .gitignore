@@ -48,10 +48,10 @@ xcshareddata/
 *.xcworkspace/xcuserdata/
 
 # IDE metadata
- # PyCharm
- *.iml
- *.ipr
- *.iws
+# PyCharm
+*.iml
+*.ipr
+*.iws
 # Temporary files
 *.tmp
 *.temp

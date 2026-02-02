@@ -107,6 +107,12 @@ class JobQueue:
 
         # Rate limiting for batch operations
         self.rate_limit_per_minute = rate_limit_per_minute
+        self.request_times: List[float] = []
+        self.rate_limit_lock = threading.Lock()
+
+        # Load persisted jobs
+        self._load_jobs()
+
     def _check_rate_limit(self) -> bool:
         """Check if we're within rate limits for batch operations"""
         with self.rate_limit_lock:
@@ -129,11 +135,6 @@ class JobQueue:
             return None
 
         return self.add_job(job)
-        self.request_times: List[float] = []
-        self.rate_limit_lock = threading.Lock()
-
-        # Load persisted jobs
-        self._load_jobs()
 
     def start(self):
         """Start the job queue processing"""

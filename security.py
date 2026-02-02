@@ -19,6 +19,7 @@ import json
 import logging
 import socket
 import ipaddress
+import threading
 from typing import Dict, List, Optional, Any, Union
 from pathlib import Path
 from dataclasses import dataclass, field
@@ -31,7 +32,7 @@ from cryptography.hazmat.primitives.serialization import pkcs12
 from cryptography.hazmat.backends import default_backend
 import base64
 import jwt
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 import ssl
 import subprocess
 import re
@@ -295,8 +296,8 @@ class AuthenticationManager:
         payload = {
             "user_id": user_id,
             "permissions": permissions or [],
-            "exp": datetime.utcnow() + timedelta(hours=24),
-            "iat": datetime.utcnow()
+            "exp": datetime.now(UTC) + timedelta(hours=24),
+            "iat": datetime.now(UTC)
         }
         
         return jwt.encode(payload, self.jwt_secret, algorithm="HS256")

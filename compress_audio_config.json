@@ -130,7 +130,7 @@
     }
   },
   "default_settings": {
-    "format": "integration_test_format",
+    "format": "mp3",
     "content_type": "speech",
     "channels": 1,
     "loudnorm_enabled": true,
